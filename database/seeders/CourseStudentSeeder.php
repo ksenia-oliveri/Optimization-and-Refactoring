@@ -14,29 +14,25 @@ class CourseStudentSeeder extends Seeder
      */
     public function run(): void
     {
-
-        foreach(Student::get() as $student)
-        {
+        foreach(Student::get() as $student) {
             \DB::table("course_students")->insert([
-                "student_id"=> $student->id,
-                "course_id"=> Course::get()->random()->id,
+                "student_id" => $student->id,
+                "course_id" => Course::get()->random()->id,
             ]);
         }
 
-        foreach(Student::get()->random(100) as $student)
-        {
+        foreach(Student::get()->random(100) as $student) {
             \DB::table("course_students")->insert([
-                "student_id"=> $student->id,
-                "course_id"=> Course::get()->random()->id,
-                ]);
+                "student_id" => $student->id,
+                "course_id" => Course::get()->random()->id,
+            ]);
         }
 
-        foreach(Student::get()->random(75) as $student)
-        {
+        foreach(Student::get()->random(75) as $student) {
             \DB::table("course_students")->insert([
-                "student_id"=> $student->id,
-                "course_id"=> Course::get()->random()->id,
-                ]);
-        }   
+                "student_id" => $student->id,
+                "course_id" => Course::get()->random()->id,
+            ]);
+        }
     }
 }

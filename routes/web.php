@@ -20,12 +20,9 @@ Route::prefix('forms')->group(function () {
     Route::get('/students/all/courses', [FormsController::class, 'allStudentsCourses'])->name('get.all.students.courses');
     Route::post('/student/{student_id}/course/add', [FormsController::class, 'addStudentToCourse'])->name('add.student.to.course');
     Route::delete('/student/{student_id}/course/delete', [FormsController::class, 'deleteStudentFromCourse'])->name('delete.student.from.course');
-    
+
     Route::post('/add', [FormsController::class, 'addNewStudent'])->name('add.student');
     Route::delete('/delete', [FormsController::class, 'deleteStudent'])->name('delete.student');
 
 
-    });
-
-
-
+});

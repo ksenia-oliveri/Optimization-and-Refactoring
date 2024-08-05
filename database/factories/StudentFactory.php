@@ -16,7 +16,7 @@ class StudentFactory extends Factory
      * @return array<string, mixed>
      */
     public function definition(): array
-    {   
+    {
         $firstNames = [
             'John', 'Jane', 'Michael', 'Emily', 'David', 'Emma', 'Chris', 'Olivia', 'James', 'Sophia',
             'Robert', 'Isabella', 'Daniel', 'Mia', 'Matthew', 'Amelia', 'Andrew', 'Harper', 'Joseph', 'Ava'

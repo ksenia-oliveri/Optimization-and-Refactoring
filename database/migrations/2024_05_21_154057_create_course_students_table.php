@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -20,7 +19,7 @@ return new class extends Migration
             //IDX
             $table->index('course_id', 'course_student_course_idx');
             $table->index('student_id', 'course_student_student_idx');
-            
+
 
             //FK
             $table->foreign('course_id', 'course_student_course_fk')->on('courses')->references('id');

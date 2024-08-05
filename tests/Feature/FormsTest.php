@@ -18,8 +18,7 @@ class FormsTest extends TestCase
     }
 
     public function test_groups_page_returns_list_of_groups()
-    {   
-        
+    {
         $response = $this->get('/forms/groups/?number=25');
 
         $response->assertStatus(200)
@@ -38,7 +37,7 @@ class FormsTest extends TestCase
 
     }
     public function test_page_returns_students_and_courses()
-    {   
+    {
         $response = $this->get('/forms/students/all/courses');
 
         $response->assertStatus(200)
@@ -47,7 +46,7 @@ class FormsTest extends TestCase
     }
 
     public function test_create_student_successfull()
-    {   
+    {
         $student = [
             'first_name' => 'Alisa',
             'last_name' => 'Doggy'

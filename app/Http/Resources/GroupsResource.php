@@ -13,7 +13,7 @@ class GroupsResource extends JsonResource
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
-    {   
+    {
         return [
             'group_name' => $this->name,
             'number_of_students' => $this->count,

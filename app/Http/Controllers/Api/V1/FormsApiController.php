@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AddCourseRequest;
 use App\Http\Requests\StoreRequest;
 use App\Http\Resources\GroupsResource;
 use App\Http\Resources\StudentsAllCoursesResource;
@@ -19,7 +18,7 @@ use Illuminate\Http\Request;
  *      title="Students info",
  *      description="Information about students, groups and their courses",
  * )
- * 
+ *
  */
 
 class FormsApiController extends Controller
@@ -53,13 +52,13 @@ class FormsApiController extends Controller
      *     },
      * )
      */
-    
+
     public function findGroups(Request $request)
-    {   
+    {
         $number = $request->number;
-         GroupsResource::collection(Student::join('groups', 'students.group_id', '=', 'groups.id')->select(\DB::raw('COUNT(*) as count'), 'groups.name')->groupBy('groups.name')->get()->where('count', '<=', $number));
-       return response()->json();
-        
+        GroupsResource::collection(Student::join('groups', 'students.group_id', '=', 'groups.id')->select(\DB::raw('COUNT(*) as count'), 'groups.name')->groupBy('groups.name')->get()->where('count', '<=', $number));
+
+        return response()->json();
     }
 
     /**
@@ -98,50 +97,46 @@ class FormsApiController extends Controller
         StudentsResource::collection(CourseStudent::join('courses', 'courses.id', '=', 'course_students.course_id')->join('students', 'students.id', '=', 'course_students.student_id')->select('students.first_name', 'students.last_name', 'courses.name')->where('courses.name', '=', $course)->get());
 
         return response()->json();
-
     }
 
- /**
- * @OA\Post(
- *     path="/api/v1/add",
- *     tags={"Students"},
- *     summary="Adds a new student",
- *     @OA\RequestBody(
- *         @OA\MediaType(
- *             mediaType="application/json",
- *             @OA\Schema(
- *                 @OA\Property(
- *                     property="first_name",
- *                     type="string"
- *                 ),
- *                 @OA\Property(
- *                     property="last_name",
- *                     type="string"
- *                 ),
- *                 example={"first_name": "Anna", "last_name": "Smith"}
- *             )
- *         )
- *     ),
- *     @OA\Response(
- *         response=201,
- *         description="OK",
- *         @OA\JsonContent(
- *            @OA\Property(property="data", type="object",
- *                  @OA\Property(property="first_name", type="string"),
- *                  @OA\Property(property="last_name", type="string"),
- *      
- * 
- * )
- *         )
- *     )
- * )
- */
-
-
+    /**
+    * @OA\Post(
+    *     path="/api/v1/add",
+    *     tags={"Students"},
+    *     summary="Adds a new student",
+    *     @OA\RequestBody(
+    *         @OA\MediaType(
+    *             mediaType="application/json",
+    *             @OA\Schema(
+    *                 @OA\Property(
+    *                     property="first_name",
+    *                     type="string"
+    *                 ),
+    *                 @OA\Property(
+    *                     property="last_name",
+    *                     type="string"
+    *                 ),
+    *                 example={"first_name": "Anna", "last_name": "Smith"}
+    *             )
+    *         )
+    *     ),
+    *     @OA\Response(
+    *         response=201,
+    *         description="OK",
+    *         @OA\JsonContent(
+    *            @OA\Property(property="data", type="object",
+    *                  @OA\Property(property="first_name", type="string"),
+    *                  @OA\Property(property="last_name", type="string"),
+    *
+    *
+    * )
+    *         )
+    *     )
+    * )
+    */
     public function addNewStudent(StoreRequest $request)
     {
         $student = Student::create($request->validated());
-
         StudentsResource::make($student);
 
         return response()->json();
@@ -176,7 +171,7 @@ class FormsApiController extends Controller
      * )
      */
     public function deleteStudent(Request $request)
-    {   
+    {
         $student_id = $request->student_id;
         Student::where('students.id', '=', $student_id)
         ->delete();
@@ -184,8 +179,6 @@ class FormsApiController extends Controller
         return 'Student ' . $student_id . ' was successfully deleted';
     }
 
-
-   
     /**
      * @OA\Get(
      *      path="/api/v1/students/all/courses",
@@ -193,7 +186,7 @@ class FormsApiController extends Controller
      *      tags={"StudentsCourses"},
      *      summary="Get list of students and courses they are related on",
      *      description="Returns list of students and their courses",
-     *   
+     *
      *      @OA\Response(
      *          response=200,
      *          description="successful operation"
@@ -216,47 +209,48 @@ class FormsApiController extends Controller
     }
 
     /**
- * @OA\Post(
- *     path="/api/v1/student/{student_id}/course/add",
- *     summary="Adds a new course to student",
- *     @OA\RequestBody(
- *         @OA\MediaType(
- *             mediaType="application/json",
- *             @OA\Schema(
- *                 @OA\Property(
- *                     property="course",
- *                     type="string"
- *                 ),
- *                 @OA\Property(
- *                     property="student_id",
- *                     type="intenger"
- *                 ),
- *                 example={"course": "Math", "student_id": "26"}
- *             )
- *         )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="OK",
- *         @OA\JsonContent(
- *             oneOf={
- *                 @OA\Schema(ref="#/components/schemas/Result"),
- *                 @OA\Schema(type="boolean")
- *             },
- *             @OA\Examples(example="result", value={"success": true}, summary="An result object."),
- *             @OA\Examples(example="bool", value=false, summary="A boolean value."),
- *         )
- *     )
- * )
- */
+    * @OA\Post(
+    *     path="/api/v1/student/{student_id}/course/add",
+    *     summary="Adds a new course to student",
+    *     @OA\RequestBody(
+    *         @OA\MediaType(
+    *             mediaType="application/json",
+    *             @OA\Schema(
+    *                 @OA\Property(
+    *                     property="course",
+    *                     type="string"
+    *                 ),
+    *                 @OA\Property(
+    *                     property="student_id",
+    *                     type="intenger"
+    *                 ),
+    *                 example={"course": "Math", "student_id": "26"}
+    *             )
+    *         )
+    *     ),
+    *     @OA\Response(
+    *         response=200,
+    *         description="OK",
+    *         @OA\JsonContent(
+    *             oneOf={
+    *                 @OA\Schema(ref="#/components/schemas/Result"),
+    *                 @OA\Schema(type="boolean")
+    *             },
+    *             @OA\Examples(example="result", value={"success": true}, summary="An result object."),
+    *             @OA\Examples(example="bool", value=false, summary="A boolean value."),
+    *         )
+    *     )
+    * )
+    */
 
     public function addStudentToCourse(Request $request, $student_id)
     {
         CourseStudent::insert([
-            "student_id"=> $student_id,
-            "course_id"=> Course::select('courses.id')->where('courses.name', $request->course)->first()->id,
+            "student_id" => $student_id,
+            "course_id" => Course::select('courses.id')->where('courses.name', $request->course)->first()->id,
         ]);
-        return 'Course ' . $request->course . ' was added to student ' . $student_id; 
+
+        return 'Course ' . $request->course . ' was added to student ' . $student_id;
     }
 
     /**
@@ -296,17 +290,16 @@ class FormsApiController extends Controller
      *     },
      * )
      */
-    
+
     public function deleteStudentFromCourse(Request $request, $student_id)
     {
         $data = Course::select('courses.id')->where('courses.name', '=', $request->course)->first()->id;
 
-      CourseStudent::where('course_students.student_id', '=', $student_id)
-       ->where('course_students.course_id', '=', $data)
-       ->delete();
+        CourseStudent::where('course_students.student_id', '=', $student_id)
+         ->where('course_students.course_id', '=', $data)
+         ->delete();
 
-       return 'Course ' . $request->course . ' was deleted from student ' . $student_id;  
-
+        return 'Course ' . $request->course . ' was deleted from student ' . $student_id;
     }
 
 }

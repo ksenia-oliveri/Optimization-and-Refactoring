@@ -56,7 +56,6 @@
   <a href="{{route('get.all.students.courses')}}">
   <button type="button" class="btn btn-link">Show</button>
   </a>
-</div>
-    
+</div>   
 </body>
 </html>

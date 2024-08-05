@@ -17,6 +17,6 @@ class DatabaseSeeder extends Seeder
         Group::factory(10)->create();
         $this->call(CourseSeeder::class);
         $this->call(StudentSeeder::class);
-        $this->call(CourseStudentSeeder::class);  
+        $this->call(CourseStudentSeeder::class);
     }
 }
