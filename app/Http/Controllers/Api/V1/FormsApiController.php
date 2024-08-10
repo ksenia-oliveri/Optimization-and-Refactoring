@@ -94,9 +94,9 @@ class FormsApiController extends Controller
     public function findStudentsOnCourse(Request $request)
     {
         $course = $request->course;
-        StudentsResource::collection(CourseStudent::join('courses', 'courses.id', '=', 'course_students.course_id')->join('students', 'students.id', '=', 'course_students.student_id')->select('students.first_name', 'students.last_name', 'courses.name')->where('courses.name', '=', $course)->get());
+        $data = StudentsResource::collection(CourseStudent::join('courses', 'courses.id', '=', 'course_students.course_id')->join('students', 'students.id', '=', 'course_students.student_id')->select('students.first_name', 'students.last_name', 'courses.name')->where('courses.name', '=', $course)->get());
 
-        return response()->json();
+        return response()->json($data);
     }
 
     /**
@@ -136,10 +136,9 @@ class FormsApiController extends Controller
     */
     public function addNewStudent(StoreRequest $request)
     {
-        $student = Student::create($request->validated());
-        StudentsResource::make($student);
+        $student = StudentsResource::make(Student::create($request->validated()));
 
-        return response()->json();
+        return response()->json($student);
     }
 
     /**

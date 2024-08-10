@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\CourseStudent;
 use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -14,7 +15,9 @@ class FormsTest extends TestCase
         $response = $this->get('/forms');
 
         $response->assertStatus(200)
-        ->assertViewIs('forms');
+        ->assertViewIs('forms')
+        ->assertSee('Find groups with less or equals student count')
+        ->assertSee('Add new student');
     }
 
     public function test_groups_page_returns_list_of_groups()
@@ -31,9 +34,16 @@ class FormsTest extends TestCase
     {
         $response = $this->get('/forms/students/on/course?search=English');
 
+        $students = CourseStudent::join('courses', 'courses.id', '=', 'course_students.course_id')
+        ->join('students', 'students.id', '=', 'course_students.student_id')
+        ->select('students.first_name', 'students.last_name', 'courses.name', 'students.id')
+        ->where('courses.name', '=', 'English')
+        ->get()->toArray();
+
         $response->assertStatus(200)
         ->assertViewIs('StudentsOnCourse')
-        ->assertSee('List of students related to the English course');
+        ->assertSee('List of students related to the English course')
+        ->assertSeeTextInOrder($students);
 
     }
     public function test_page_returns_students_and_courses()
