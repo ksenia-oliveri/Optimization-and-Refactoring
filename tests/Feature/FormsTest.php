@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\CourseStudent;
 use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class FormsTest extends TestCase
@@ -17,17 +18,21 @@ class FormsTest extends TestCase
         $response->assertStatus(200)
         ->assertViewIs('forms')
         ->assertSee('Find groups with less or equals student count')
-        ->assertSee('Add new student');
+        ->assertSee('Add new student')
+        ->assertSee('Find students related to the course')
+        ->assertSee('Delete student by STUDENT_ID')
+        ->assertSee('Show all students and their courses');
     }
 
     public function test_groups_page_returns_list_of_groups()
     {
-        $response = $this->get('/forms/groups/?number=25');
+        $response = $this->withHeaders([
+            'X-Header' => 'Value',
+        ])->post('/forms/groups', ['number' => '25']);
 
         $response->assertStatus(200)
         ->assertViewIs('groups')
-        ->assertSee('Groups with 25 students or less');
-
+        ->assertViewHas('Groups with 25 students or less');
     }
 
     public function test_courses_page_returns_list_of_students_related_on_course()

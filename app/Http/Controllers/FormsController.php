@@ -7,22 +7,19 @@ use App\Models\CourseStudent;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreRequest;
+use App\Services\DataService;
 
 class FormsController extends Controller
 {
     public function index()
-    {
+    {   
         return view("forms");
     }
 
     public function findGroups(Request $request)
     {
         $number = $request->number;
-        $groups = Student::join('groups', 'students.group_id', '=', 'groups.id')
-        ->select(\DB::raw('COUNT(*) as count'), 'groups.name')
-        ->groupBy('groups.name')
-        ->get()
-        ->where('count', '<=', $number);
+        $groups = (new DataService)->findGroupsInDB($number);
 
         return view('groups', compact(['groups', 'number']));
     }

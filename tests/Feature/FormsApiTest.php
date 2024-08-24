@@ -19,15 +19,12 @@ class FormsApiTest extends TestCase
 
     public function test_api_returns_list_of_students_on_course()
     {   
-        $response = $this->json('GET', '/api/v1/students', ['course' => 'Math']);
-
+        $response = $this->json('POST', '/api/v1/students', ['course' => 'Math']);
 
         $response->assertStatus(200);
         $response->assertJson(fn (AssertableJson $json) =>
             $json->has(25)
-    ); // Root level does not have the expected size.
-   // Failed asserting that actual size 0 matches expected size 25.
-   // Там вообще он пустой почему-то
+    ); 
     }
 
     public function test_create_student_successfully()
