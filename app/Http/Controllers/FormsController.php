@@ -27,11 +27,7 @@ class FormsController extends Controller
     public function findStudentsOnCourse(Request $request)
     {
         $search = $request->search;
-        $students = CourseStudent::join('courses', 'courses.id', '=', 'course_students.course_id')
-        ->join('students', 'students.id', '=', 'course_students.student_id')
-        ->select('students.first_name', 'students.last_name', 'courses.name', 'students.id')
-        ->where('courses.name', '=', $search)
-        ->get();
+        $students = (new DataService)->findStudentOnCourse($search);
 
         return view("StudentsOnCourse", compact(['students', 'search']));
     }
@@ -39,48 +35,40 @@ class FormsController extends Controller
     public function addNewStudent(StoreRequest $request)
     {
         $data = $request->validated();
-        Student::create($data);
+       (new DataService)->createNewStudent($data);
 
-        return 'Student ' . $data['first_name'] . ' '. $data['last_name'] . ' was successfully added';
+       return 'Student ' . $data['first_name'] . ' '. $data['last_name'] . ' was successfully added';
     }
 
     public function deleteStudent(Request $request)
     {
         $student_id = $request->student_id;
-        Student::where('students.id', '=', $student_id)
-        ->delete();
+        (new DataService)->deleteStudent($student_id);
 
         return 'Student with student_id ' . $student_id . ' was successfully deleted';
     }
 
     public function allStudentsCourses()
     {
-        $students = Student::get();
-        $studentsCourses = CourseStudent::join('courses', 'courses.id', '=', 'course_students.course_id')
-        ->select('courses.name', 'course_students.student_id', 'courses.id')
-        ->get();
-        $courses = Course::get();
+        $students = (new DataService)->getStudents();
+        $studentsCourses = (new DataService)->getCoursesStudentId();
+        $courses = (new DataService)->getCourses();
 
         return view('StudentsAllCourses', compact(['students', 'studentsCourses', 'courses']));
     }
 
     public function addStudentToCourse(Request $request, $student_id)
-    {
-        CourseStudent::insert([
-         "student_id" => $student_id,
-         "course_id" => Course::select('courses.id')->where('courses.name', $request->course)->first()->id,
-    ]);
+    {   
+        $course = $request->course;
+        (new DataService)->addStudentToCourse($course, $student_id);
 
         return redirect()->route('get.all.students.courses');
     }
 
     public function deleteStudentFromCourse(Request $request, $student_id)
-    {
-        $data = Course::select('courses.id')->where('courses.name', '=', $request->course)->first()->id;
-
-        CourseStudent::where('course_students.student_id', '=', $student_id)
-         ->where('course_students.course_id', '=', $data)
-         ->delete();
+    {   
+        $course = $request->course;
+        (new DataService)->deleteStudentFromCourse($course, $student_id);
 
         return redirect()->route('get.all.students.courses');
     }

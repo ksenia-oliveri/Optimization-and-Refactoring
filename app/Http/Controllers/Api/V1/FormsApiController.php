@@ -10,6 +10,7 @@ use App\Http\Resources\StudentsResource;
 use App\Models\Course;
 use App\Models\CourseStudent;
 use App\Models\Student;
+use App\Services\DataService;
 use Illuminate\Http\Request;
 
 /**
@@ -56,7 +57,7 @@ class FormsApiController extends Controller
     public function findGroups(Request $request)
     {
         $number = $request->number;
-        GroupsResource::collection(Student::join('groups', 'students.group_id', '=', 'groups.id')->select(\DB::raw('COUNT(*) as count'), 'groups.name')->groupBy('groups.name')->get()->where('count', '<=', $number));
+        GroupsResource::collection((new DataService)->findGroupsInDB($number));
 
         return response()->json();
     }
@@ -94,7 +95,7 @@ class FormsApiController extends Controller
     public function findStudentsOnCourse(Request $request)
     {
         $course = $request->course;
-        $data = StudentsResource::collection(CourseStudent::join('courses', 'courses.id', '=', 'course_students.course_id')->join('students', 'students.id', '=', 'course_students.student_id')->select('students.first_name', 'students.last_name', 'courses.name')->where('courses.name', '=', $course)->get());
+        $data = StudentsResource::collection((new DataService)->findStudentOnCourse($course));
 
         return response()->json($data);
     }
@@ -135,8 +136,9 @@ class FormsApiController extends Controller
     * )
     */
     public function addNewStudent(StoreRequest $request)
-    {
-        $student = StudentsResource::make(Student::create($request->validated()));
+    {   
+        $data = $request->validated();
+        $student = StudentsResource::make((new DataService)->createNewStudent($data));
 
         return response()->json($student);
     }
@@ -172,8 +174,7 @@ class FormsApiController extends Controller
     public function deleteStudent(Request $request)
     {
         $student_id = $request->student_id;
-        Student::where('students.id', '=', $student_id)
-        ->delete();
+        (new DataService)->deleteStudent($student_id);
 
         return 'Student ' . $student_id . ' was successfully deleted';
     }
@@ -202,7 +203,7 @@ class FormsApiController extends Controller
 
     public function allStudentsCourses()
     {
-        StudentsAllCoursesResource::collection(CourseStudent::join('courses', 'courses.id', '=', 'course_students.course_id')->join('students', 'students.id', '=', 'course_students.student_id')->select('students.first_name', 'students.last_name', 'courses.name')->get());
+        StudentsAllCoursesResource::collection((new DataService)->getCoursesStudentsList());
 
         return response()->json();
     }
@@ -243,13 +244,11 @@ class FormsApiController extends Controller
     */
 
     public function addStudentToCourse(Request $request, $student_id)
-    {
-        CourseStudent::insert([
-            "student_id" => $student_id,
-            "course_id" => Course::select('courses.id')->where('courses.name', $request->course)->first()->id,
-        ]);
+    {   
+        $course = $request->course;
+        (new DataService)->addStudentToCourse($course, $student_id);
 
-        return 'Course ' . $request->course . ' was added to student ' . $student_id;
+        return 'Course ' . $course . ' was added to student ' . $student_id;
     }
 
     /**
@@ -292,13 +291,10 @@ class FormsApiController extends Controller
 
     public function deleteStudentFromCourse(Request $request, $student_id)
     {
-        $data = Course::select('courses.id')->where('courses.name', '=', $request->course)->first()->id;
+        $course = $request->course;
+        (new DataService)->deleteStudentFromCourse($course, $student_id);
 
-        CourseStudent::where('course_students.student_id', '=', $student_id)
-         ->where('course_students.course_id', '=', $data)
-         ->delete();
-
-        return 'Course ' . $request->course . ' was deleted from student ' . $student_id;
+        return 'Course ' . $course . ' was deleted from student ' . $student_id;
     }
 
 }
