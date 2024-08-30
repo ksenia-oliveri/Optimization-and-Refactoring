@@ -57,14 +57,14 @@ class FormsApiController extends Controller
     public function findGroups(Request $request)
     {
         $number = $request->number;
-        GroupsResource::collection((new DataService)->findGroupsInDB($number));
+        $data = GroupsResource::collection((new DataService)->findGroupsInDB($number));
 
-        return response()->json();
+        return response()->json($data);
     }
 
     /**
      * @OA\Get(
-     *      path="/api/v1/students",
+     *      path="/api/v1/students/on/course",
      *      operationId="GetStudentsRelatedToTheCourse",
      *      tags={"Students"},
      *      summary="Get list of students related to the course ",
@@ -137,8 +137,7 @@ class FormsApiController extends Controller
     */
     public function addNewStudent(StoreRequest $request)
     {   
-        $data = $request->validated();
-        $student = StudentsResource::make((new DataService)->createNewStudent($data));
+        $student = StudentsResource::make(Student::create($request->validated()));
 
         return response()->json($student);
     }

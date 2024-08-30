@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     Route::get('/groups', [FormsApiController::class,'findGroups']);
-    Route::get('/students', [FormsApiController::class, 'findStudentsOnCourse']);
+    Route::get('/students/on/course', [FormsApiController::class, 'findStudentsOnCourse']);
     Route::post('/add', [FormsApiController::class, 'addNewStudent']);
     Route::delete('/delete', [FormsApiController::class, 'deleteStudent']);
 

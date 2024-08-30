@@ -12,19 +12,19 @@ class FormsApiTest extends TestCase
 
     public function test_api_returns_list_of_groups()
     {
-        $response = $this->getJson('/api/v1/groups/?number=25');
-
-        $response->assertStatus(200);
+        $response = $this->getJson('/api/v1/groups?number=25');
+        $data = ["group_name" => "AE-53",
+        "number_of_students"=> 9];
+        $response->assertStatus(200)
+        ->assertJsonFragment($data);
     }
 
     public function test_api_returns_list_of_students_on_course()
     {   
-        $response = $this->json('POST', '/api/v1/students', ['course' => 'Math']);
+        $response = $this->getJson('api/v1/students/on/course?course=Math');
 
         $response->assertStatus(200);
-        $response->assertJson(fn (AssertableJson $json) =>
-            $json->has(25)
-    ); 
+        $response->assertJsonCount(25);
     }
 
     public function test_create_student_successfully()

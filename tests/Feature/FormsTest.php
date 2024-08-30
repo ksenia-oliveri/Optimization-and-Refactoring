@@ -26,13 +26,11 @@ class FormsTest extends TestCase
 
     public function test_groups_page_returns_list_of_groups()
     {
-        $response = $this->withHeaders([
-            'X-Header' => 'Value',
-        ])->post('/forms/groups', ['number' => '25']);
+        $response = $this->get('/forms/groups?number=25');
 
         $response->assertStatus(200)
         ->assertViewIs('groups')
-        ->assertViewHas('Groups with 25 students or less');
+        ->assertSeeText('Groups with 25 students or less');
     }
 
     public function test_courses_page_returns_list_of_students_related_on_course()
