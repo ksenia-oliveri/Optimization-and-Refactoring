@@ -7,7 +7,7 @@
     <title>Groups</title>
 </head>
 <body>
-    <h1>Groups with {{$number}} students or less </h1>
+    <h1>Groups with {{$number}} students or less</h1>
     <table class="table table-striped">
   <thead>
     <tr>

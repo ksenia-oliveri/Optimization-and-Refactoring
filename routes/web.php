@@ -14,7 +14,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::prefix('forms')->group(function () {
     Route::get('/', [FormsController::class, 'index'])->name('mainPage');
-    Route::get('/groups', [FormsController::class,'findGroups'])->name('find.groups');
+    Route::get('/groups', [FormsController::class,'showGroups'])->name('find.groups');
     Route::get('/students/on/course', [FormsController::class, 'findStudentsOnCourse'])->name('find.students');
 
     Route::get('/students/all/courses', [FormsController::class, 'allStudentsCourses'])->name('get.all.students.courses');

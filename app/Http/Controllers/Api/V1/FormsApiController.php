@@ -7,8 +7,6 @@ use App\Http\Requests\StoreRequest;
 use App\Http\Resources\GroupsResource;
 use App\Http\Resources\StudentsAllCoursesResource;
 use App\Http\Resources\StudentsResource;
-use App\Models\Course;
-use App\Models\CourseStudent;
 use App\Models\Student;
 use App\Services\DataService;
 use Illuminate\Http\Request;
@@ -24,6 +22,14 @@ use Illuminate\Http\Request;
 
 class FormsApiController extends Controller
 {
+    private DataService $dataService;
+
+    public function __construct(DataService $service)
+    {
+        $this->dataService = $service;
+    }
+    
+    
     /**
      * @OA\Get(
      *      path="/api/v1/groups",
@@ -57,9 +63,9 @@ class FormsApiController extends Controller
     public function findGroups(Request $request)
     {
         $number = $request->number;
-        $data = GroupsResource::collection((new DataService)->findGroupsInDB($number));
+        $data = GroupsResource::collection($this->dataService->findGroupsInDB($number));
 
-        return response()->json($data);
+        return response()->json($data, 200);
     }
 
     /**
@@ -95,7 +101,7 @@ class FormsApiController extends Controller
     public function findStudentsOnCourse(Request $request)
     {
         $course = $request->course;
-        $data = StudentsResource::collection((new DataService)->findStudentOnCourse($course));
+        $data = StudentsResource::collection($this->dataService->findStudentOnCourse($course));
 
         return response()->json($data);
     }
@@ -139,7 +145,7 @@ class FormsApiController extends Controller
     {   
         $student = StudentsResource::make(Student::create($request->validated()));
 
-        return response()->json($student);
+        return response()->json($student, 201);
     }
 
     /**
@@ -158,7 +164,7 @@ class FormsApiController extends Controller
      *          )
      *      ),
      *      @OA\Response(
-     *          response=200,
+     *          response=204,
      *          description="successful operation"
      *       ),
      *      @OA\Response(response=400, description="Bad request"),
@@ -173,9 +179,9 @@ class FormsApiController extends Controller
     public function deleteStudent(Request $request)
     {
         $student_id = $request->student_id;
-        (new DataService)->deleteStudent($student_id);
+        $this->dataService->deleteStudent($student_id);
 
-        return 'Student ' . $student_id . ' was successfully deleted';
+        return response()->json(['message' => 'student was successefully deleted'], 200);
     }
 
     /**
@@ -202,9 +208,9 @@ class FormsApiController extends Controller
 
     public function allStudentsCourses()
     {
-        StudentsAllCoursesResource::collection((new DataService)->getCoursesStudentsList());
+        $data = StudentsAllCoursesResource::collection($this->dataService->getCoursesStudentsList());
 
-        return response()->json();
+        return response()->json($data, 200);
     }
 
     /**
@@ -228,7 +234,7 @@ class FormsApiController extends Controller
     *         )
     *     ),
     *     @OA\Response(
-    *         response=200,
+    *         response=201,
     *         description="OK",
     *         @OA\JsonContent(
     *             oneOf={
@@ -245,9 +251,9 @@ class FormsApiController extends Controller
     public function addStudentToCourse(Request $request, $student_id)
     {   
         $course = $request->course;
-        (new DataService)->addStudentToCourse($course, $student_id);
+        $this->dataService->addStudentToCourse($course, $student_id);
 
-        return 'Course ' . $course . ' was added to student ' . $student_id;
+        return response()->json(['message' => 'Student was successfully added to the course'], 201);
     }
 
     /**
@@ -291,9 +297,9 @@ class FormsApiController extends Controller
     public function deleteStudentFromCourse(Request $request, $student_id)
     {
         $course = $request->course;
-        (new DataService)->deleteStudentFromCourse($course, $student_id);
+        $this->dataService->deleteStudentFromCourse($course, $student_id);
 
-        return 'Course ' . $course . ' was deleted from student ' . $student_id;
+        return response()->json(['message' => 'Student was successefully deleted from the course'], 200);
     }
 
 }

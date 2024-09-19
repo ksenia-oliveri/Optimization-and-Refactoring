@@ -2,15 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Models\CourseStudent;
 use App\Models\Student;
+use App\Services\DataService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class FormsTest extends TestCase
 {
     use RefreshDatabase;
+
     public function test_forms_page_contains_forms(): void
     {
         $response = $this->get('/forms');
@@ -35,17 +35,13 @@ class FormsTest extends TestCase
 
     public function test_courses_page_returns_list_of_students_related_on_course()
     {
-        $response = $this->get('/forms/students/on/course?search=English');
+        $response = $this->get('/forms/students/on/course?course=English');
 
-        $students = CourseStudent::join('courses', 'courses.id', '=', 'course_students.course_id')
-        ->join('students', 'students.id', '=', 'course_students.student_id')
-        ->select('students.first_name', 'students.last_name', 'courses.name', 'students.id')
-        ->where('courses.name', '=', 'English')
-        ->get()->toArray();
+        $students = (new DataService)->findStudentOnCourse('English')->toArray();
 
         $response->assertStatus(200)
         ->assertViewIs('StudentsOnCourse')
-        ->assertSee('List of students related to the English course')
+        ->assertSee("List of students related to the English course")
         ->assertSeeTextInOrder($students);
 
     }
@@ -53,9 +49,11 @@ class FormsTest extends TestCase
     {
         $response = $this->get('/forms/students/all/courses');
 
+        $data = (new DataService)->getCoursesStudentsList()->toArray();
         $response->assertStatus(200)
         ->assertViewIs('StudentsAllCourses')
-        ->assertSee('Students and courses they are related on');
+        ->assertSee('Students and courses they are related on')
+        ->assertSeeTextInOrder($data);
     }
 
     public function test_create_student_successfull()
@@ -74,14 +72,17 @@ class FormsTest extends TestCase
 
     public function test_student_delete_successefully()
     {
-        $student = Student::make([
+        $student = Student::create([
             'first_name' => 'Anna',
             'last_name' => 'Dark',
-        ]);
+        ])->toArray();
 
-        $response = $this->delete('/forms/delete/?student_id='. $student->id);
+        $response = $this->delete('/forms/delete?student_id=' . $student['id']);
 
         $response->assertStatus(200)
-        ->assertSee('Student with student_id ' . $student->id . ' was successfully deleted');
+        ->assertSee('Student with student_id ' . $student['id'] . ' was successfully deleted');
+        $this->assertDatabaseMissing('students', $student );
     }
+
+
 }

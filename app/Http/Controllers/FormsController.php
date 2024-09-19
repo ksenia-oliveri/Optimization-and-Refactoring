@@ -2,73 +2,82 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
-use App\Models\CourseStudent;
-use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreRequest;
 use App\Services\DataService;
 
 class FormsController extends Controller
-{
+{   
+    private DataService $dataService;
+
+    public function __construct(DataService $service)
+    {
+        $this->dataService = $service;
+    }
+    // main page with forms
     public function index()
     {   
         return view("forms");
     }
 
-    public function findGroups(Request $request)
+    //get list of groups with same or less nimber of students
+    public function showGroups(Request $request)
     {
         $number = $request->number;
-        $groups = (new DataService)->findGroupsInDB($number);
-
+        $groups = $this->dataService->findGroupsInDB($number);
         return view('groups', compact(['groups', 'number']));
     }
 
+    // get list of students related to the course
     public function findStudentsOnCourse(Request $request)
     {
-        $search = $request->search;
-        $students = (new DataService)->findStudentOnCourse($search);
+        $course = $request->course;
+        $students = $this->dataService->findStudentOnCourse($course);
 
-        return view("StudentsOnCourse", compact(['students', 'search']));
+        return view("StudentsOnCourse", compact(['students', 'course']));
     }
-
-    public function addNewStudent(StoreRequest $request)
+    // create a new student
+    public function addNewStudent(StoreRequest $request): string
     {
         $data = $request->validated();
-       (new DataService)->createNewStudent($data);
+       $this->dataService->createNewStudent($data);
 
        return 'Student ' . $data['first_name'] . ' '. $data['last_name'] . ' was successfully added';
     }
-
-    public function deleteStudent(Request $request)
+    
+    //delete student by student_id
+    public function deleteStudent(Request $request): string
     {
         $student_id = $request->student_id;
-        (new DataService)->deleteStudent($student_id);
+        $this->dataService->deleteStudent($student_id);
 
         return 'Student with student_id ' . $student_id . ' was successfully deleted';
     }
 
+    // return list with all students and their courses
     public function allStudentsCourses()
     {
-        $students = (new DataService)->getStudents();
-        $studentsCourses = (new DataService)->getCoursesStudentId();
-        $courses = (new DataService)->getCourses();
+        $students = $this->dataService->getStudents();
+        $studentsCourses = $this->dataService->getCoursesStudentId();
+        $courses = $this->dataService->getCourses();
 
         return view('StudentsAllCourses', compact(['students', 'studentsCourses', 'courses']));
     }
 
+    //add course to student
     public function addStudentToCourse(Request $request, $student_id)
     {   
         $course = $request->course;
-        (new DataService)->addStudentToCourse($course, $student_id);
+        $this->dataService->addStudentToCourse($course, $student_id);
 
         return redirect()->route('get.all.students.courses');
     }
 
+    //delete course from student
     public function deleteStudentFromCourse(Request $request, $student_id)
     {   
         $course = $request->course;
-        (new DataService)->deleteStudentFromCourse($course, $student_id);
+        $this->dataService->deleteStudentFromCourse($course, $student_id);
 
         return redirect()->route('get.all.students.courses');
     }

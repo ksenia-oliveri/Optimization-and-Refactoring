@@ -36,8 +36,7 @@ class DataService
 
     public function deleteStudent($student_id)
     {
-        Student::where('students.id', '=', $student_id)
-        ->delete();
+        Student::find($student_id)->delete();
     }
 
     public function getStudents()

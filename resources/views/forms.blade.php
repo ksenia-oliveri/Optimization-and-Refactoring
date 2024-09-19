@@ -17,7 +17,7 @@
 <form action=" {{route('find.students') }}" method="GET" class="p-2">
   <div class="form-group">
     <label>Find students related to the course</label>
-    <input type="text" class="form-control" name='search' placeholder="Enter course name">
+    <input type="text" class="form-control" name='course' placeholder="Enter course name">
     <input type="submit" class="btn btn-primary mt-2" value="Search" >
   </div>
 </form>

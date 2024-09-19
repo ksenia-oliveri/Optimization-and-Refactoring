@@ -7,7 +7,7 @@
     <title>Students on course</title>
 </head>
 <body>
-    <h1>List of students related to the {{$search}} course</h1>
+    <h1>List of students related to the {{$course}} course </h1>
     <table class="table table-striped w-50" >
   <thead>
     <tr>
